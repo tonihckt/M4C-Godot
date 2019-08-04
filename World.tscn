@@ -1,0 +1,59 @@
+[gd_scene load_steps=9 format=2]
+
+[ext_resource path="res://World.gd" type="Script" id=1]
+[ext_resource path="res://Enemy_Golem.tscn" type="PackedScene" id=2]
+[ext_resource path="res://Sprites/Background/background.png" type="Texture" id=3]
+[ext_resource path="res://Player.tscn" type="PackedScene" id=4]
+[ext_resource path="res://Interface.tscn" type="PackedScene" id=5]
+[ext_resource path="res://Sounds/Audio_Death.wav" type="AudioStream" id=6]
+[ext_resource path="res://Sounds/World-Of-Automatons_Looping.ogg" type="AudioStream" id=7]
+
+[sub_resource type="Curve2D" id=1]
+_data = {
+"points": PoolVector2Array( 0, 0, 0, 0, 0.437386, -0.745903, 0, 0, 0, 0, 640.835, 2.07523, 0, 0, 0, 0, 638.835, 962.823, 0, 0, 0, 0, 0.165283, 962.823, 0, 0, 0, 0, 2.66595, 1.82512, 0, 0, 0, 0, 0.437386, -0.745903 )
+}
+
+[node name="World" type="Node"]
+script = ExtResource( 1 )
+Enemy = ExtResource( 2 )
+
+[node name="Background" type="TextureRect" parent="."]
+margin_left = -1239.0
+margin_top = -200.0
+margin_right = 2261.0
+margin_bottom = 3300.0
+texture = ExtResource( 3 )
+
+[node name="Player" parent="." instance=ExtResource( 4 )]
+
+[node name="Score_Timer" type="Timer" parent="."]
+
+[node name="Enemy_Timer" type="Timer" parent="."]
+wait_time = 0.5
+
+[node name="Start_Timer" type="Timer" parent="."]
+wait_time = 2.0
+one_shot = true
+
+[node name="Start_Position" type="Position2D" parent="."]
+position = Vector2( 320, 480 )
+
+[node name="Enemy_Road" type="Path2D" parent="."]
+curve = SubResource( 1 )
+
+[node name="Enemy_Position" type="PathFollow2D" parent="Enemy_Road"]
+position = Vector2( 0.437386, -0.745903 )
+rotation = 0.00440524
+
+[node name="Interface" parent="." instance=ExtResource( 5 )]
+
+[node name="Audio_Death" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 6 )
+
+[node name="Audio_Player" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 7 )
+[connection signal="knock" from="Player" to="." method="game_over"]
+[connection signal="timeout" from="Score_Timer" to="." method="_on_Score_Timer_timeout"]
+[connection signal="timeout" from="Enemy_Timer" to="." method="_on_Enemy_Timer_timeout"]
+[connection signal="timeout" from="Start_Timer" to="." method="_on_Start_Timer_timeout"]
+[connection signal="start_game" from="Interface" to="." method="new_game"]
